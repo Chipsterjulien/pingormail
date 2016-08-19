@@ -186,18 +186,19 @@ func sendMail(ip *string, maxRetry *int) {
 	to := viper.GetStringSlice("email.sendTo")
 	who := viper.GetString("location")
 
-	// TLS config
-	tlsconfig := &tls.Config{
-		InsecureSkipVerify: true,
-		ServerName:         host,
-	}
+	// // TLS config
+	// tlsconfig := &tls.Config{
+	// 	InsecureSkipVerify: true,
+	// 	ServerName:         host,
+	// }
 
 	e := email.NewEmail()
 	e.From = from
 	e.To = to
 	e.Subject = "Machine not found"
 	e.Text = []byte(fmt.Sprintf("I'm \"%s\". After %d tests, I can't ping \"%s\" !", who, *maxRetry, *ip))
-	if err := e.SendWithTLS(hostport, smtp.PlainAuth("", login, password, host), tlsconfig); err != nil {
+	// if err := e.SendWithTLS(hostport, smtp.PlainAuth("", login, password, host), tlsconfig); err != nil {
+	if err := e.Send(hostport, smtp.PlainAuth("", login, password, host)); err != nil {
 		log.Warningf("Unable to send an email to \"%s\": %v", err)
 	} else {
 		log.Debugf("Email was sent to \"%s\"", *ip)

@@ -1,0 +1,32 @@
+# logtype can take: debug, info, notice, warning, error, critical
+# warning is the default
+logtype = "debug"
+
+location = ""
+
+[default]
+retry = 6
+# waiting for daemon mode
+waiting = 60
+daemon = true
+timeout = 30
+
+[ping]
+urls = []
+
+[status]
+urls = []
+
+[email]
+# Your email
+from = ""
+# Smtp of your email
+smtp = ""
+# SSL port
+port = 587
+# Your email login
+login = ""
+# Your email password
+password = ""
+# Who are send emails
+sendTo = []

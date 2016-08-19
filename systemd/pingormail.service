@@ -1,0 +1,15 @@
+[Unit]
+Description=Ping some ip or send an email
+Wants=network.target
+After=network.target
+
+[Service]
+Type=simple
+User=http
+Group=http
+ExecStart=/usr/bin/pingormail
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

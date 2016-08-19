@@ -1,0 +1,12 @@
+[Unit]
+Description=Timer for pingormail
+
+[Timer]
+# If true, start as soon as possible the firt time (after reboot for example)
+Persistent=false
+OnBootSec=0s
+OnCalendar=minutely
+Unit=pingormail.service
+
+[Install]
+WantedBy=default.target

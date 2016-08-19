@@ -62,6 +62,8 @@ func isGood(out string) bool {
 func pingAddr(ipList *[]string, maxRetry *int) {
 	log := logging.MustGetLogger("log")
 
+	log.Debug("Method: ping")
+
 	for _, ip := range *ipList {
 		log.Debugf("Ping: %s", ip)
 		loop := true
@@ -90,7 +92,7 @@ func pingAddr(ipList *[]string, maxRetry *int) {
 func statusAddr(ipList *[]string, maxRetry *int) {
 	log := logging.MustGetLogger("log")
 
-	log.Debug("Status method")
+	log.Debug("Method: status")
 
 	for _, ip := range *ipList {
 		log.Debugf("Ping: %s", ip)
@@ -119,13 +121,16 @@ func statusAddr(ipList *[]string, maxRetry *int) {
 func statusFunc(ip *string) bool {
 	log := logging.MustGetLogger("log")
 
-	log.Debug("Status method")
+	timeout := viper.GetInt("default.timeout")
+
+	log.Debug("Method: status")
+	log.Debugf("Timeout: %ss", timeout)
 
 	var resp *http.Response
 	var client *http.Client
 
 	client = &http.Client{
-		Timeout: 5 * time.Second,
+		Timeout: time.Duration(timeout) * time.Second,
 	}
 
 	resp, err := client.Get(*ip)
@@ -136,16 +141,16 @@ func statusFunc(ip *string) bool {
 		tr := &http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 			Dial: (&net.Dialer{
-				Timeout:   30 * time.Second,
-				KeepAlive: 30 * time.Second,
+				Timeout:   time.Duration(timeout) * time.Second,
+				KeepAlive: time.Duration(timeout) * time.Second,
 			}).Dial,
-			TLSHandshakeTimeout:   10 * time.Second,
-			ResponseHeaderTimeout: 10 * time.Second,
-			ExpectContinueTimeout: 10 * time.Second,
+			TLSHandshakeTimeout:   time.Duration(timeout) * time.Second,
+			ResponseHeaderTimeout: time.Duration(timeout) * time.Second,
+			ExpectContinueTimeout: time.Duration(timeout) * time.Second,
 		}
 		client := &http.Client{
 			Transport: tr,
-			Timeout:   time.Second,
+			Timeout:   time.Duration(timeout) * time.Second,
 		}
 
 		resp, err = client.Get(*ip)

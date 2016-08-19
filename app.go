@@ -124,7 +124,7 @@ func statusFunc(ip *string) bool {
 	timeout := viper.GetInt("default.timeout")
 
 	log.Debug("Method: status")
-	log.Debugf("Timeout: %ss", timeout)
+	log.Debugf("Timeout: %ds", timeout)
 
 	var resp *http.Response
 	var client *http.Client

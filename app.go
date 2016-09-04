@@ -16,13 +16,13 @@ import (
 )
 
 func main() {
-	// confPath := "cfg/"
-	// confFilename := "pingormail"
-	// logFilename := "error.log"
-
 	confPath := "/etc/pingormail/"
 	confFilename := "pingormail"
 	logFilename := "/var/log/pingormail/error.log"
+
+	// confPath := "cfg/"
+	// confFilename := "pingormail"
+	// logFilename := "error.log"
 
 	fd := initLogging(&logFilename)
 	defer fd.Close()
@@ -44,6 +44,17 @@ func main() {
 		}
 	} else {
 		startApp()
+	}
+}
+
+func checkHttpForStatusAddr(statusIpList *[]string) {
+	log := logging.MustGetLogger("log")
+
+	for _, ip := range *statusIpList {
+		if (strings.Index(ip, "http://") != 0) && (strings.Index(ip, "https://") != 0) {
+			log.Critical("You must put http:// or https:// at the beginning")
+			os.Exit(1)
+		}
 	}
 }
 
@@ -191,18 +202,11 @@ func sendMail(ip *string, maxRetry *int) {
 	to := viper.GetStringSlice("email.sendTo")
 	who := viper.GetString("location")
 
-	// // TLS config
-	// tlsconfig := &tls.Config{
-	// 	InsecureSkipVerify: true,
-	// 	ServerName:         host,
-	// }
-
 	e := email.NewEmail()
 	e.From = from
 	e.To = to
 	e.Subject = "Machine not found"
 	e.Text = []byte(fmt.Sprintf("I'm \"%s\". After %d tests, I can't ping \"%s\" !", who, *maxRetry, *ip))
-	// if err := e.SendWithTLS(hostport, smtp.PlainAuth("", login, password, host), tlsconfig); err != nil {
 	if err := e.Send(hostport, smtp.PlainAuth("", login, password, host)); err != nil {
 		log.Warningf("Unable to send an email to \"%s\": %v", err)
 	} else {
@@ -228,6 +232,8 @@ func startApp() {
 		log.Warning("Waiting time must be over 0 !")
 		return
 	}
+
+	checkHttpForStatusAddr(&statusIpList)
 
 	for {
 		pingAddr(&pingIpList, &maxRetry)

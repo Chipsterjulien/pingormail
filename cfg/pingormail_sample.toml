@@ -14,6 +14,7 @@ timeout = 30
 [ping]
 urls = []
 
+# Put http:// or https:// at the beginning
 [status]
 urls = []
 
